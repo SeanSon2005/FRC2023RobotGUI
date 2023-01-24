@@ -127,13 +127,16 @@ def createTrajectory():
         latestY = prevY
         return
 
-    dpg.set_value(mouseCoordTag, "GOAL: X " + str(latestX) + " Y " + str(latestY))
+    dpg.set_value(mouseCoordTag, f"GOAL: X {latestX:.0f} Y {latestY:.0f}")
 
     if(robotY < latestY):
         tempAngle = robotAngle+90
     else:
         tempAngle = robotAngle-90
-    intersectCoords, trajectoryCoords = generateTrajectoryVector(robotX, robotY, tempAngle, latestX, latestY)
+    try:
+        intersectCoords, trajectoryCoords = generateTrajectoryVector(robotX, robotY, tempAngle, latestX, latestY)
+    except TypeError:
+        return
     update_graphics()
 
 
@@ -227,5 +230,6 @@ def main():
 
     dpg.destroy_context()
     os._exit(0)
+
 
 main()
