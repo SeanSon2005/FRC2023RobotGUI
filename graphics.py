@@ -24,6 +24,8 @@ new_frame_time = 0
 SCREENWIDTH = user32.GetSystemMetrics(0)
 SCREENHEIGHT = user32.GetSystemMetrics(1)
 FPS_RECORD_DELAY = 4
+MAX_FPS = 2000
+NUM_CHECKBOXES = 5
 
 #Global Tags
 robotCoordTag = 0
@@ -38,7 +40,7 @@ latestY = 0
 gameScale = 1
 
 fps_record_delay_count = FPS_RECORD_DELAY
-fps_record = collections.deque(max_size=100)
+fps_record = collections.deque(maxlen=100)
 
 #Connect to NetworkTables
 if USINGNETWORKTABLES and __name__ == "__main__":
@@ -52,7 +54,7 @@ robotX = 400
 robotY = 600
 robotAngle = 0
 
-def average(sequence: List[int]) -> float:
+def average(sequence: list[int]) -> float:
     return sum(sequence) / len(sequence)
 
 # Gets the raw fps, which can be very wrong
@@ -197,21 +199,16 @@ def main():
 
     def clicked(num):
         def handleClick():
-            dpg.set_value("checkbox1", num == 1)
-            dpg.set_value("checkbox2", num == 2)
-            dpg.set_value("checkbox3", num == 3)
-            dpg.set_value("checkbox4", num == 4)
-            dpg.set_value("checkbox5", num == 5)
+            for checkbox_num in range(1, NUM_CHECKBOXES+1):
+                dpg.set_value(f"checkbox{checkbox_num}", num == checkbox_num)
         return handleClick
+    
     # create window for control buttons and stuff
     with dpg.window(tag="ctlwindow2", label="", no_close=True, min_size=(450, 250), pos=(SCREENWIDTH / 3 + 20, 250)):
         # Add 5 checkboxes named 1 to 5. If you click on one, then the others will be unchecked. When a checkbox is clicked, set a global variable to the int value of the checkbox.
         with dpg.group(horizontal=True):
-            dpg.add_checkbox(label="1", callback=clicked(1), tag="checkbox1")
-            dpg.add_checkbox(label="2", callback=clicked(2), tag="checkbox2")
-            dpg.add_checkbox(label="3", callback=clicked(3), tag="checkbox3")
-            dpg.add_checkbox(label="4", callback=clicked(4), tag="checkbox4")
-            dpg.add_checkbox(label="5", callback=clicked(5), tag="checkbox5")
+            for checkbox_num in range(1, NUM_CHECKBOXES+1):
+                dpg.add_checkbox(label=str(checkbox_num), callback=clicked(checkbox_num), tag=f"checkbox{checkbox_num}")
 
     def callExit():
         os._exit(0)
