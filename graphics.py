@@ -136,6 +136,24 @@ def createTrajectory():
     intersectCoords, trajectoryCoords = generateTrajectoryVector(robotX, robotY, tempAngle, latestX, latestY)
     update_graphics()
 
+
+#mouse wheel scaling
+def scale_image(sender, app_data):
+    global gameScale
+    gameScale += (app_data * 0.05)
+    if gameScale < 1.0:
+        gameScale = 1.0
+    else:
+        update_graphics()
+    dpg.set_value(scaleTag, "SCALE " + str(round(gameScale, 2)) + "x")
+
+
+def clicked(num):
+    def handleClick():
+        for checkbox_num in range(1, NUM_CHECKBOXES+1):
+            dpg.set_value(f"checkbox{checkbox_num}", num == checkbox_num)
+    return handleClick
+
 #main APP CONTROL
 def main():
     #always create context first
@@ -165,16 +183,6 @@ def main():
     dpg.toggle_viewport_fullscreen()
     dpg.set_global_font_scale(3)
 
-    #mouse wheel scaling
-    def scale_image(sender, app_data):
-        global gameScale
-        gameScale += (app_data * 0.05)
-        if gameScale < 1.0:
-            gameScale = 1.0
-        else:
-            update_graphics()
-        dpg.set_value(scaleTag, "SCALE " + str(round(gameScale, 2)) + "x")
-
     #basically an event handler
     with dpg.handler_registry():
         dpg.add_mouse_wheel_handler(callback=scale_image)
@@ -196,12 +204,6 @@ def main():
         scaleTag = dpg.add_text("SCALE 1x")
         robotCoordTag = dpg.add_text("ROBOT: X 0 Y 0")
         mouseCoordTag = dpg.add_text("GOAL: X 0 Y 0")
-
-    def clicked(num):
-        def handleClick():
-            for checkbox_num in range(1, NUM_CHECKBOXES+1):
-                dpg.set_value(f"checkbox{checkbox_num}", num == checkbox_num)
-        return handleClick
     
     # create window for control buttons and stuff
     with dpg.window(tag="ctlwindow2", label="", no_close=True, min_size=(450, 250), pos=(SCREENWIDTH / 3 + 20, 250)):
@@ -210,11 +212,8 @@ def main():
             for checkbox_num in range(1, NUM_CHECKBOXES+1):
                 dpg.add_checkbox(label=str(checkbox_num), callback=clicked(checkbox_num), tag=f"checkbox{checkbox_num}")
 
-    def callExit():
-        os._exit(0)
-
     with dpg.window(tag="why", label="", no_close=True, min_size=(150, 150),pos=(SCREENWIDTH - 110, 20)):
-        dpg.add_button(tag="exit", label="X", callback=callExit)
+        dpg.add_button(tag="exit", label="X", callback=lambda: os._exit(0))
 
     #show viewport
     dpg.show_viewport()
