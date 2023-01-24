@@ -1,4 +1,6 @@
 
 __pychache__/
+__pychache__
 .vscode/
+.idea/
 trajectory.npy
